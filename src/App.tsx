@@ -15,10 +15,13 @@ import { Intro } from './components/Intro.tsx'
 import { DisruptionPanel } from './components/DisruptionPanel.tsx'
 import { LiveCalculation } from './components/LiveCalculation.tsx'
 import { deriveLiveCalculation } from './state/liveCalculation.ts'
+import { useMobileLayout } from './hooks/useMobileLayout.ts'
+import { MobileSimulation } from './components/MobileSimulation.tsx'
 
 const emptySimulation = initialSimulationState()
 
 export default function App() {
+  const mobile = useMobileLayout()
   const [application, dispatch] = useReducer(journeyReducer, undefined, initialJourneyState)
   const { journey, algorithm, run, mode, notice } = application
   const simulation = useSimulation()
@@ -66,8 +69,10 @@ export default function App() {
       {mode === 'journey' && (journey.phase === 'SELECT_ORIGIN' || journey.phase === 'SELECT_DESTINATION') && <div className="selection-prompt" key={journey.phase} aria-live="polite"><span className="eyebrow">{journey.phase === 'SELECT_ORIGIN' ? '01 / Your origin' : '02 / Your destination'}</span><h2>{journey.phase === 'SELECT_ORIGIN' ? 'Where are you starting?' : 'Where are you going?'}</h2><p>{journey.phase === 'SELECT_ORIGIN' ? 'Select a station. We’ll find the connection.' : 'From ' + originName + '. Select your destination.'}</p><span className="selection-hint"><span aria-hidden="true">↖</span> Explore the map</span></div>}
       {notice && !hasPlayback && <p className="selection-notice" role="status">{notice}</p>}
         {journey.phase === 'CONFIGURE' && <RouteSetup graph={network} route={journey} algorithm={algorithm} onChange={next => dispatch({ type: 'set-algorithm', algorithm: next })} onVisualize={() => dispatch({ type: 'visualize' })} onChangeOrigin={() => dispatch({ type: 'change-origin' })} onChangeDestination={() => dispatch({ type: 'change-destination' })} />}
-      {journey.phase === 'SIMULATING' && (mode === 'journey' ? telemetry : <details className="execution-details"><summary>Live algorithm <span>{algorithm}</span></summary>{telemetry}</details>)}
-      {journey.phase === 'SIMULATING' && <LiveCalculation graph={network} algorithm={algorithm} calculation={active ? calculation : null} />}
+      {journey.phase === 'SIMULATING' && (mobile ? <MobileSimulation graph={network} algorithm={algorithm} state={visibleState} cursor={active ? simulation.cursor : 0} count={active ? simulation.eventCount : 0} calculation={active ? calculation : null} telemetry={telemetry} /> : <>
+        {mode === 'journey' ? telemetry : <details className="execution-details"><summary>Live algorithm <span>{algorithm}</span></summary>{telemetry}</details>}
+        <LiveCalculation graph={network} algorithm={algorithm} calculation={active ? calculation : null} />
+      </>)}
       {journey.phase === 'RESULT' && <RouteResult graph={network} state={visibleState} route={journey} algorithm={algorithm} closed={closed} executionDetails={telemetry} onReplay={() => dispatch({ type: 'replay' })} onNewJourney={() => dispatch({ type: 'new-journey' })} onRestoreAll={() => dispatch({ type: 'restore-all' })} />}
     </aside>
     {notice && journey.phase === 'SIMULATING' && <div className="reroute-notice" key={run?.id} role="status"><span className="eyebrow">Route disrupted</span><p>Recalculating…</p></div>}

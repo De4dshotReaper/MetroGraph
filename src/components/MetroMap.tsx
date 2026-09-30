@@ -3,6 +3,8 @@ import type { AlgorithmEvent, MetroGraph, SimulationState } from '../types/graph
 import { StationNode } from './StationNode.tsx'
 import { EdgeTravel } from './EdgeTravel.tsx'
 import type { Journey } from '../state/journey.ts'
+import { useMobileLayout } from '../hooks/useMobileLayout.ts'
+import { useMobileMapPan } from '../hooks/useMobileMapPan.ts'
 
 interface Props {
   graph: MetroGraph; state: SimulationState; journey: Journey; closed: ReadonlySet<string>
@@ -19,6 +21,10 @@ export function MetroMap({ graph, state, journey, closed, disruptionMode, onSele
   const top = Math.min(...ys) - 40
   const width = Math.max(...xs) - left + 80
   const height = Math.max(...ys) - top + 60
+  const mobile = useMobileLayout()
+  const interchanges = graph.stations.filter(station => station.isInterchange)
+  const center = { x: interchanges.reduce((sum, station) => sum + station.x, 0) / interchanges.length, y: interchanges.reduce((sum, station) => sum + station.y, 0) / interchanges.length }
+  const pan = useMobileMapPan(mobile, center, { left, top, width, height })
   const selection = journey.phase === 'SELECT_ORIGIN' || journey.phase === 'SELECT_DESTINATION'
   const result = journey.phase === 'RESULT' && state.reachable
   const settled = journey.phase === 'RESULT'
@@ -37,7 +43,7 @@ export function MetroMap({ graph, state, journey, closed, disruptionMode, onSele
   }
   return (
     <section className="map-workspace" aria-label="Metro network">
-      <div className="map-scroll" tabIndex={0} role="region" aria-label="Scrollable metro map. Use arrow keys to pan on smaller screens.">
+      <div {...pan} className="map-scroll" tabIndex={0} role="region" aria-label="Scrollable metro map. Drag or use arrow keys to explore.">
       <svg viewBox={`${left} ${top} ${width} ${height}`} role="group" aria-labelledby="map-title map-description" className="metro-svg">
         <title id="map-title">MetroGraph network</title>
         <desc id="map-description">{graph.stations.length} stations on {graph.lines.length} bidirectional lines. Select stations with a click, Enter or Space. A circle marks origin, a square marks destination, and a cross marks a closed station.</desc>
