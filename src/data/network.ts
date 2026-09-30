@@ -1,0 +1,67 @@
+import type { MetroGraph } from '../types/graph.ts'
+
+/**
+ * Bidirectional fictional city network with two independent loops.
+ * The 8-minute Azure/Amber corridors deliberately trade fewer stops for slower travel.
+ * The southern Emerald arc takes three 2-minute connections instead of two 8-minute ones.
+ */
+export const network = {
+  lines: [
+    { id: 'azure', name: 'Azure Line', color: '#639bce' },
+    { id: 'emerald', name: 'Emerald Line', color: '#5eae91' },
+    { id: 'amber', name: 'Amber Line', color: '#d7a561' },
+  ],
+  stations: [
+    { id: 'northgate', name: 'Northgate', x: 80, y: 100, lineIds: ['azure'], isInterchange: false },
+    { id: 'hillcrest', name: 'Hillcrest', x: 180, y: 200, lineIds: ['azure'], isInterchange: false },
+    { id: 'university', name: 'University', x: 280, y: 200, lineIds: ['azure'], isInterchange: false },
+    { id: 'apex-central', name: 'Apex Central', x: 400, y: 200, lineIds: ['azure', 'emerald'], isInterchange: true },
+    { id: 'nova-square', name: 'Nova Square', x: 550, y: 200, lineIds: ['azure'], isInterchange: false },
+    { id: 'meridian', name: 'Meridian', x: 700, y: 200, lineIds: ['azure', 'amber'], isInterchange: true },
+    { id: 'east-market', name: 'East Market', x: 850, y: 200, lineIds: ['azure'], isInterchange: false },
+    { id: 'tech-park', name: 'Tech Park', x: 950, y: 100, lineIds: ['azure'], isInterchange: false },
+    { id: 'eastgate', name: 'Eastgate', x: 1080, y: 100, lineIds: ['azure'], isInterchange: false },
+    { id: 'west-end', name: 'West End', x: 100, y: 400, lineIds: ['emerald'], isInterchange: false },
+    { id: 'old-quarter', name: 'Old Quarter', x: 200, y: 400, lineIds: ['emerald'], isInterchange: false },
+    { id: 'civic-gardens', name: 'Civic Gardens', x: 300, y: 300, lineIds: ['emerald'], isInterchange: false },
+    { id: 'riverside', name: 'Riverside', x: 400, y: 350, lineIds: ['emerald'], isInterchange: false },
+    { id: 'grand-terminal', name: 'Grand Terminal', x: 400, y: 500, lineIds: ['emerald', 'amber'], isInterchange: true },
+    { id: 'arena', name: 'Arena', x: 500, y: 600, lineIds: ['emerald'], isInterchange: false },
+    { id: 'docklands', name: 'Docklands', x: 600, y: 600, lineIds: ['emerald'], isInterchange: false },
+    { id: 'harbor-point', name: 'Harbor Point', x: 700, y: 500, lineIds: ['emerald', 'amber'], isInterchange: true },
+    { id: 'coast-road', name: 'Coast Road', x: 900, y: 700, lineIds: ['emerald'], isInterchange: false },
+    { id: 'southbank', name: 'Southbank', x: 200, y: 700, lineIds: ['amber'], isInterchange: false },
+    { id: 'foundry', name: 'Foundry', x: 300, y: 600, lineIds: ['amber'], isInterchange: false },
+    { id: 'canal-street', name: 'Canal Street', x: 550, y: 500, lineIds: ['amber'], isInterchange: false },
+    { id: 'maritime-museum', name: 'Maritime Museum', x: 700, y: 350, lineIds: ['amber'], isInterchange: false },
+    { id: 'observatory', name: 'Observatory', x: 800, y: 100, lineIds: ['amber'], isInterchange: false },
+    { id: 'ridgeway', name: 'Ridgeway', x: 900, y: 0, lineIds: ['amber'], isInterchange: false },
+  ],
+  connections: [
+    { id: 'az-01', from: 'northgate', to: 'hillcrest', weight: 3, lineId: 'azure' },
+    { id: 'az-02', from: 'hillcrest', to: 'university', weight: 2, lineId: 'azure' },
+    { id: 'az-03', from: 'university', to: 'apex-central', weight: 2, lineId: 'azure' },
+    { id: 'az-04', from: 'apex-central', to: 'nova-square', weight: 8, lineId: 'azure' },
+    { id: 'az-05', from: 'nova-square', to: 'meridian', weight: 8, lineId: 'azure' },
+    { id: 'az-06', from: 'meridian', to: 'east-market', weight: 3, lineId: 'azure' },
+    { id: 'az-07', from: 'east-market', to: 'tech-park', weight: 3, lineId: 'azure' },
+    { id: 'az-08', from: 'tech-park', to: 'eastgate', weight: 2, lineId: 'azure' },
+    { id: 'em-01', from: 'west-end', to: 'old-quarter', weight: 3, lineId: 'emerald' },
+    { id: 'em-02', from: 'old-quarter', to: 'civic-gardens', weight: 2, lineId: 'emerald' },
+    { id: 'em-03', from: 'civic-gardens', to: 'apex-central', weight: 3, lineId: 'emerald' },
+    { id: 'em-04', from: 'apex-central', to: 'riverside', weight: 2, lineId: 'emerald' },
+    { id: 'em-05', from: 'riverside', to: 'grand-terminal', weight: 2, lineId: 'emerald' },
+    { id: 'em-06', from: 'grand-terminal', to: 'arena', weight: 2, lineId: 'emerald' },
+    { id: 'em-07', from: 'arena', to: 'docklands', weight: 2, lineId: 'emerald' },
+    { id: 'em-08', from: 'docklands', to: 'harbor-point', weight: 2, lineId: 'emerald' },
+    { id: 'em-09', from: 'harbor-point', to: 'coast-road', weight: 4, lineId: 'emerald' },
+    { id: 'am-01', from: 'southbank', to: 'foundry', weight: 3, lineId: 'amber' },
+    { id: 'am-02', from: 'foundry', to: 'grand-terminal', weight: 3, lineId: 'amber' },
+    { id: 'am-03', from: 'grand-terminal', to: 'canal-street', weight: 8, lineId: 'amber' },
+    { id: 'am-04', from: 'canal-street', to: 'harbor-point', weight: 8, lineId: 'amber' },
+    { id: 'am-05', from: 'harbor-point', to: 'maritime-museum', weight: 2, lineId: 'amber' },
+    { id: 'am-06', from: 'maritime-museum', to: 'meridian', weight: 2, lineId: 'amber' },
+    { id: 'am-07', from: 'meridian', to: 'observatory', weight: 3, lineId: 'amber' },
+    { id: 'am-08', from: 'observatory', to: 'ridgeway', weight: 3, lineId: 'amber' },
+  ],
+} as const satisfies MetroGraph
